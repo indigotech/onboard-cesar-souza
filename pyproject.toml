@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "onboard-cesar-souza"
+version = "0.1.0"
+description = ""
+authors = ["cksar <cesarhsouzasoad@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "3.11.6"
+python-dotenv = "^1.1.0"
+
+[tool.pyright]
+exclude = [".venv"]
+typeCheckingMode = "off"
+venv = ".venv"
+venvPath = "."
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
