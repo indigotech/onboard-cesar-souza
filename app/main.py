@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -12,6 +12,6 @@ class HelloResponse(BaseModel):
             }
         }
 
-@app.get("/hello/{name}", response_model=HelloResponse)
-async def send_hello(name: str = Path(min_length=2)):
+@app.get("/hello", response_model=HelloResponse)
+async def send_hello(name: str = Query(min_length=2)):
     return HelloResponse(message=f"Hello, {name}")
