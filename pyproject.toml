@@ -19,6 +19,9 @@ uvicorn = {extras = ["standard"], version = "0.34.2"}
 [tool.poetry.scripts]
 serve = "run:main"
 
+[tool.poetry.group.dev.dependencies]
+mypy = "1.15.0"
+
 [tool.pyright]
 exclude = [".venv"]
 typeCheckingMode = "off"

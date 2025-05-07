@@ -1,24 +1,17 @@
-from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, Path
+from pydantic import BaseModel
 
 app = FastAPI()
 
-class Hello: 
-    name: str
-
-    def __init__(self, name: str):
-        self.name = name
-
-class HelloRequest(BaseModel):
-    name: str = Field(min_length=1)
-
+class HelloResponse(BaseModel):
+    message: str
     class Config():
         json_schema_extra = {
             "example": {
-                "name": "Cesar"
+                "message": "Hello, Cesar"
             }
         }
 
-@app.get("/hello/{name}")
-async def hello(name: str):
-    return {"message": f"Hello, {name}"}
+@app.get("/hello/{name}", response_model=HelloResponse)
+async def send_hello(name: str = Path(min_length=2)):
+    return HelloResponse(message=f"Hello, {name}")
