@@ -1,9 +1,11 @@
 from pydantic import BaseModel
+from datetime import date
 
 class UserBase(BaseModel):
     name: str
     email: str
-    birthDate: str
+    password: str
+    birthDate: date
 
 class UserCreate(UserBase):
     pass
