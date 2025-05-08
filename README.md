@@ -40,6 +40,7 @@ POSTGRES_DB=your_postgres_db_name
 TEST_USER=your_test_user
 TEST_PASSWORD=your_test_password
 TEST_DB=your_test_db_name
+DATABASE_URL=your_database_url
 ```
 ### **4. Setting up PostgreSQL with Docker**
 Run the following command to start the PostgreSQL container:
