@@ -20,4 +20,3 @@ class HelloResponse(BaseModel):
 @app.get("/hello", response_model=HelloResponse)
 async def send_hello(name: str = Query(min_length=2)):
     return HelloResponse(message=f"Hello, {name}")
-
