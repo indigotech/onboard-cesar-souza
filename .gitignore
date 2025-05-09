@@ -1,0 +1,19 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Poetry virtual environment
+.venv/
+
+# Editor configs
+.vscode/
+
+# Environment variables
+.env
+
+# Python Version
+.python-version
+
+# Test/cache/build artifacts
+.pytest_cache/
+*.log
