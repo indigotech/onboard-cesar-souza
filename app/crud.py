@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 from fastapi import HTTPException
 from . import models, schemas
 import re
+import bcrypt
 
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
     if len(user.name) < 3:
@@ -18,10 +19,12 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     if not re.search(PASSWORD_VALIDATION_REGEX, user.password):
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters long and contain at least one letter and one number")
     
+    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+
     db_user = models.User(
         name=user.name,
         email=user.email,
-        password=user.password,
+        password=hashed_password.decode('utf-8'),
         birthDate=user.birthDate
     )
     db.add(db_user)

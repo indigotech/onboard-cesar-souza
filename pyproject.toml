@@ -18,6 +18,7 @@ uvicorn = {extras = ["standard"], version = "0.34.2"}
 sqlalchemy = "2.0.40"
 psycopg2-binary = "2.9.10"
 asyncpg = "0.30.0"
+bcrypt = "4.3.0"
 
 [tool.poetry.scripts]
 serve = "run:main"
