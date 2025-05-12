@@ -1,12 +1,16 @@
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
-from fastapi import FastAPI
 from . import models
 from .database import engine
+from contextlib import asynccontextmanager
 
-models.Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(models.Base.metadata.create_all)
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 class HelloResponse(BaseModel):
     message: str
