@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Depends
+from fastapi import FastAPI, Query, Depends, HTTPException
 from pydantic import BaseModel
 from . import models
 from . import crud, models, schemas
@@ -29,4 +29,7 @@ async def send_hello(name: str = Query(min_length=2)):
 
 @app.post("/users/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
-    return await crud.create_user(db=db, user=user)
+    result = await crud.create_user(db=db, user=user)
+    if isinstance(result, str):
+        raise HTTPException(status_code=400, detail=result)
+    return result
