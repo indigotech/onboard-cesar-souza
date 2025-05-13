@@ -1,7 +1,9 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Depends
 from pydantic import BaseModel
 from . import models
-from .database import engine
+from . import crud, models, schemas
+from .database import engine, get_db
+from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
@@ -24,3 +26,7 @@ class HelloResponse(BaseModel):
 @app.get("/hello", response_model=HelloResponse)
 async def send_hello(name: str = Query(min_length=2)):
     return HelloResponse(message=f"Hello, {name}")
+
+@app.post("/users/", response_model=schemas.User)
+async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+    return await crud.create_user(db=db, user=user)

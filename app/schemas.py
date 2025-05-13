@@ -4,14 +4,16 @@ from datetime import date
 class UserBase(BaseModel):
     name: str
     email: str
-    password: str
     birthDate: date
 
 class UserCreate(UserBase):
-    pass
+    password: str
 
-class User(UserBase):
+class User(BaseModel):
     id: int
+    name: str
+    email: str
+    birthDate: date
 
     class Config:
         from_attributes = True
