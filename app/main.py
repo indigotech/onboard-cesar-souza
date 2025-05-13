@@ -5,11 +5,13 @@ from . import crud, models, schemas
 from .database import engine, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
+from .handlers import register_exception_handlers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(models.Base.metadata.create_all)
+    register_exception_handlers(app)
     yield
 
 app = FastAPI(lifespan=lifespan)
