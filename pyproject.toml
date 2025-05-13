@@ -19,9 +19,13 @@ sqlalchemy = "2.0.40"
 psycopg2-binary = "2.9.10"
 asyncpg = "0.30.0"
 bcrypt = "4.3.0"
+pytest = "8.3.5"
+pytest-asyncio = "0.26.0"
+httpx = "0.28.1"
 
 [tool.poetry.scripts]
 serve = "run:main"
+test = "pytest:main"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.15.0"
