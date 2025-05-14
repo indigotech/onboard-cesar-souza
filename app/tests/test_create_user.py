@@ -39,27 +39,31 @@ async def test_create_user_name_too_short(client):
     payload = {**BASE_PAYLOAD, "name": "ab"}
     response = await client.post("/users/", json=payload)
     assert response.status_code == 400
-    data = response.json()
-    assert data["code"] == "USR_01"
-    assert data["message"] == "Nome deve ter pelo menos 3 caracteres."
-    assert data["details"] == "Name must be at least 3 characters long"
+    assert response.json() == {
+        "code": "USR_01",
+        "message": "Nome deve ter pelo menos 3 caracteres.",
+        "details": "Name must be at least 3 characters long"
+    }
 
 @pytest.mark.asyncio
 async def test_create_user_duplicate_email(client):
     await client.post("/users/", json=BASE_PAYLOAD)
     response = await client.post("/users/", json={**BASE_PAYLOAD})
     assert response.status_code == 400
-    data = response.json()
-    assert data["code"] == "USR_02"
-    assert data["message"] == "E-mail já cadastrado."
-    assert data["details"] == "A user with this email already exists"
+    assert response.json() == {
+        "code": "USR_02",
+        "message": "E-mail já cadastrado.",
+        "details": "A user with this email already exists"
+    }
 
 @pytest.mark.asyncio
 async def test_create_user_weak_password(client):
     payload = {**BASE_PAYLOAD, "password": "a1"}
     response = await client.post("/users/", json=payload)
     assert response.status_code == 400
-    data = response.json()
-    assert data["code"] == "USR_03"
-    assert data["message"] == "Credenciais inválidas. Por favor, reveja."
-    assert data["details"] == "Password must be at least 6 characters long and contain at least one letter and one number"
+    assert response.json() == {
+        "code": "USR_03",
+        "message": "Credenciais inválidas. Por favor, reveja.",
+        "details": "Password must be at least 6 characters long and contain at least one letter and one number"
+    }
+
