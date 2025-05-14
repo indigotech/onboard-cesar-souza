@@ -9,7 +9,7 @@ from sqlalchemy.pool import NullPool
 from app.main import app
 from app.database import get_db, Base
 
-load_dotenv("test.env")
+load_dotenv("test.env", override=True)
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 

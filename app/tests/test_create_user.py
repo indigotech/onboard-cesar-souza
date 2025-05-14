@@ -23,14 +23,16 @@ def user_response(user_id: int):
 @pytest.mark.asyncio
 async def test_create_user_success(client):
     response = await client.post("/users/", json=BASE_PAYLOAD)
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
     assert data == user_response(data["id"])
     async with SessionTest() as session:
         result = await session.execute(select(User).where(User.id == data["id"]))
         user = result.scalar_one()
+        assert user.name == BASE_PAYLOAD["name"]
         assert user.email == BASE_PAYLOAD["email"]
         assert bcrypt.checkpw(BASE_PAYLOAD["password"].encode(), user.password.encode())
+        assert user.birthDate.isoformat() == BASE_PAYLOAD["birthDate"]
 
 @pytest.mark.asyncio
 async def test_create_user_name_too_short(client):
