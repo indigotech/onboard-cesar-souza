@@ -48,11 +48,16 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
         )
     return result
 
-@app.post("/auth/", response_model=schemas.AuthResponse)
+@app.post("/auth/", response_model=schemas.AuthResponse, status_code=status.HTTP_200_OK)
 async def authenticate(auth: schemas.AuthRequest, db: AsyncSession = Depends(get_db)):
     result = await crud.auth_user(db=db, auth=auth)
     if isinstance(result, str):
-        raise HTTPException(status_code=400, detail=result)
+        raise AppError(
+            status_code=400,
+            code="AUTH_99",
+            message="Erro ao autenticar usuário.",
+            details=result
+        )
     return schemas.AuthResponse(
         user=schemas.User.model_validate(result),
         token="the_token"
