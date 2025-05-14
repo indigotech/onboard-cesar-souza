@@ -45,3 +45,14 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     await db.commit()
     await db.refresh(db_user)
     return db_user
+
+async def auth_user(db: AsyncSession, auth: schemas.AuthRequest):
+    result = await db.execute(select(models.User).where(models.User.email == auth.email))
+    user = result.scalar_one_or_none()
+    if not user:
+        return "Usuário não encontrado"
+
+    if not bcrypt.checkpw(auth.password.encode('utf-8'), user.password.encode('utf-8')):
+        return "Senha incorreta"
+    
+    return user
