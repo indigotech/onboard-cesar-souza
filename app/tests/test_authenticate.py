@@ -31,11 +31,11 @@ def user_response(user_id: int, token: str):
 
 @pytest.mark.asyncio
 async def test_authenticate_success(client):
-    create_response = await client.post("/users/", json=BASE_PAYLOAD)
+    create_response = await client.post("/users", json=BASE_PAYLOAD)
     assert create_response.status_code == 201
     user_id = create_response.json()["id"]
 
-    auth_response = await client.post("/auth/", json=AUTH_PAYLOAD)
+    auth_response = await client.post("/auth", json=AUTH_PAYLOAD)
     assert auth_response.status_code == 200
 
     data = auth_response.json()
@@ -56,7 +56,7 @@ async def test_authenticate_success(client):
 @pytest.mark.asyncio
 async def test_authenticate_invalid_email(client):
     payload = {**AUTH_PAYLOAD, "email": "test@test.com"}
-    response = await client.post("/auth/", json=payload)
+    response = await client.post("/auth", json=payload)
     assert response.status_code == 400
     assert response.json() == {
         "code": "AUTH_01",
@@ -66,10 +66,10 @@ async def test_authenticate_invalid_email(client):
 
 @pytest.mark.asyncio
 async def test_authenticate_invalid_password(client):
-    create_response = await client.post("/users/", json=BASE_PAYLOAD)
+    create_response = await client.post("/users", json=BASE_PAYLOAD)
     assert create_response.status_code == 201
     payload = {**AUTH_PAYLOAD, "password": "wrongpassword"}
-    response = await client.post("/auth/", json=payload)
+    response = await client.post("/auth", json=payload)
     assert response.status_code == 401
     assert response.json() == {
         "code": "AUTH_02",
@@ -79,12 +79,12 @@ async def test_authenticate_invalid_password(client):
 
 @pytest.mark.asyncio
 async def test_authenticate_with_remember_me(client):
-    create_response = await client.post("/users/", json=BASE_PAYLOAD)
+    create_response = await client.post("/users", json=BASE_PAYLOAD)
     assert create_response.status_code == 201
     user_id = create_response.json()["id"]
 
     payload = {**AUTH_PAYLOAD, "rememberMe": True}
-    auth_response = await client.post("/auth/", json=payload)
+    auth_response = await client.post("/auth", json=payload)
     assert auth_response.status_code == 200
 
     data = auth_response.json()
