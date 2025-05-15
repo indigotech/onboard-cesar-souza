@@ -5,6 +5,8 @@ from .exceptions import AppError
 import re
 import bcrypt
 
+PASSWORD_VALIDATION_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'
+
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
     if len(user.name) < 3:
         raise AppError(
@@ -23,7 +25,6 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
             details="A user with this email already exists"
         )
 
-    PASSWORD_VALIDATION_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'
     if not re.search(PASSWORD_VALIDATION_REGEX, user.password):
         raise AppError(
             status_code=400,
