@@ -4,6 +4,7 @@ from . import models, schemas
 from .exceptions import AppError
 import re
 import bcrypt
+from .jwt import create_access_token
 
 PASSWORD_VALIDATION_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'
 
@@ -46,7 +47,7 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     await db.refresh(db_user)
     return db_user
 
-async def auth_user(db: AsyncSession, auth: schemas.AuthRequest):
+async def authenticate(db: AsyncSession, auth: schemas.AuthRequest):
     result = await db.execute(select(models.User).where(models.User.email == auth.email))
     user = result.scalar_one_or_none()
     if not user:
@@ -64,4 +65,9 @@ async def auth_user(db: AsyncSession, auth: schemas.AuthRequest):
             message="Senha incorreta.",
             details="Incorrect password"
         )
-    return user
+    
+    token = create_access_token(
+        user_id=int(user.id),
+        remember_me=bool(auth.rememberMe)
+    )
+    return user, token
