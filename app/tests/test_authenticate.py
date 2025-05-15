@@ -50,7 +50,8 @@ async def test_authenticate_success(client):
 
     exp_dt = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
     now = datetime.now(timezone.utc)
-    assert exp_dt > now
+    delta = exp_dt - now
+    assert 14 <= delta.total_seconds() / 60 <= 16
 
 @pytest.mark.asyncio
 async def test_authenticate_invalid_email(client):
@@ -75,3 +76,28 @@ async def test_authenticate_invalid_password(client):
         "message": "Senha incorreta.",
         "details": "Incorrect password"
     }
+
+@pytest.mark.asyncio
+async def test_authenticate_with_remember_me(client):
+    create_response = await client.post("/users/", json=BASE_PAYLOAD)
+    assert create_response.status_code == 201
+    user_id = create_response.json()["id"]
+
+    payload = {**AUTH_PAYLOAD, "rememberMe": True}
+    auth_response = await client.post("/auth/", json=payload)
+    assert auth_response.status_code == 200
+
+    data = auth_response.json()
+    token = data["token"]
+    assert isinstance(token, str)
+
+    assert data == user_response(user_id, token)
+
+    payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    assert payload["sub"] == str(user_id)
+    assert isinstance(payload["exp"], int)
+
+    exp_dt = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+    now = datetime.now(timezone.utc)
+    delta = exp_dt - now
+    assert delta.days >= 6
