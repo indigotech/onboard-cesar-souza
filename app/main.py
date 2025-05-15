@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Query, Depends, HTTPException, status
+from fastapi import FastAPI, Query, Depends, Request, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from . import models
 from . import crud, models, schemas
 from .database import engine, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
+from .exceptions import AppError
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,6 +15,13 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=exc.to_dict(),
+    )
 
 class HelloResponse(BaseModel):
     message: str
@@ -31,5 +40,10 @@ async def send_hello(name: str = Query(min_length=2)):
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     result = await crud.create_user(db=db, user=user)
     if isinstance(result, str):
-        raise HTTPException(status_code=400, detail=result)
+        raise AppError(
+            status_code=400,
+            code="USR_99",
+            message="Erro ao criar usuário.",
+            details=result
+        )
     return result

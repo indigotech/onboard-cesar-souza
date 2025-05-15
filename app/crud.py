@@ -1,24 +1,38 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from fastapi import HTTPException
 from . import models, schemas
+from .exceptions import AppError
 import re
 import bcrypt
 
+PASSWORD_VALIDATION_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'
+
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
     if len(user.name) < 3:
-        raise HTTPException(status_code=400, detail="Name must be at least 3 characters long")
-    
+        raise AppError(
+            status_code=400,
+            code="USR_01",
+            message="Nome deve ter pelo menos 3 caracteres.",
+            details="Name must be at least 3 characters long"
+        )
+
     result = await db.execute(select(models.User).where(models.User.email == user.email))
-    existing_user = result.scalar_one_or_none()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="A user with this email already exists")
-    
-    PASSWORD_VALIDATION_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'
+    if result.scalar_one_or_none():
+        raise AppError(
+            status_code=400,
+            code="USR_02",
+            message="E-mail já cadastrado.",
+            details="A user with this email already exists"
+        )
 
     if not re.search(PASSWORD_VALIDATION_REGEX, user.password):
-        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long and contain at least one letter and one number")
-    
+        raise AppError(
+            status_code=400,
+            code="USR_03",
+            message="Credenciais inválidas. Por favor, reveja.",
+            details="Password must be at least 6 characters long and contain at least one letter and one number"
+        )
+
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
 
     db_user = models.User(
