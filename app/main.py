@@ -7,6 +7,7 @@ from .database import engine, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
 from .exceptions import AppError
+from .jwt import verify_token
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,7 +38,7 @@ async def send_hello(name: str = Query(min_length=2)):
     return HelloResponse(message=f"Hello, {name}")
 
 @app.post("/users", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
-async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db), _token_data: dict = Depends(verify_token)):
     result = await crud.create_user(db=db, user=user)
     if isinstance(result, str):
         raise AppError(

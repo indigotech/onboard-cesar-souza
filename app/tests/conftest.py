@@ -2,11 +2,11 @@ import os
 from dotenv import load_dotenv
 import pytest_asyncio
 import bcrypt
-
+import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.pool import NullPool
-
+from app.jwt import create_access_token
 from app.main import app
 from app.database import get_db, Base
 from app.models import User
@@ -61,3 +61,8 @@ async def test_user():
         await session.commit()
         await session.refresh(user)
         return user
+
+@pytest.fixture
+def auth_header():
+    token = create_access_token(user_id=1, remember_me=False)
+    return {"Authorization": f"Bearer {token}"}
