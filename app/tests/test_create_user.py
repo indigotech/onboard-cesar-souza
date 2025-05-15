@@ -22,7 +22,7 @@ def user_response(user_id: int):
 
 @pytest.mark.asyncio
 async def test_create_user_success(client):
-    response = await client.post("/users/", json=BASE_PAYLOAD)
+    response = await client.post("/users", json=BASE_PAYLOAD)
     assert response.status_code == 201
     data = response.json()
     assert data == user_response(data["id"])
@@ -37,7 +37,7 @@ async def test_create_user_success(client):
 @pytest.mark.asyncio
 async def test_create_user_name_too_short(client):
     payload = {**BASE_PAYLOAD, "name": "ab"}
-    response = await client.post("/users/", json=payload)
+    response = await client.post("/users", json=payload)
     assert response.status_code == 400
     assert response.json() == {
         "code": "USR_01",
@@ -47,8 +47,8 @@ async def test_create_user_name_too_short(client):
 
 @pytest.mark.asyncio
 async def test_create_user_duplicate_email(client):
-    await client.post("/users/", json=BASE_PAYLOAD)
-    response = await client.post("/users/", json={**BASE_PAYLOAD})
+    await client.post("/users", json=BASE_PAYLOAD)
+    response = await client.post("/users", json={**BASE_PAYLOAD})
     assert response.status_code == 400
     assert response.json() == {
         "code": "USR_02",
@@ -59,7 +59,7 @@ async def test_create_user_duplicate_email(client):
 @pytest.mark.asyncio
 async def test_create_user_weak_password(client):
     payload = {**BASE_PAYLOAD, "password": "a1"}
-    response = await client.post("/users/", json=payload)
+    response = await client.post("/users", json=payload)
     assert response.status_code == 400
     assert response.json() == {
         "code": "USR_03",

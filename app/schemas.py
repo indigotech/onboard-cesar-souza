@@ -17,3 +17,11 @@ class User(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AuthRequest(BaseModel):
+    email: str
+    password: str
+
+class AuthResponse(BaseModel):
+    user: User
+    token: str
