@@ -23,10 +23,12 @@ pytest = "8.3.5"
 pytest-asyncio = "0.26.0"
 httpx = "0.28.1"
 pyjwt = "2.10.1"
+faker = "37.3.0"
 
 [tool.poetry.scripts]
 serve = "run:main"
 test = "pytest:main"
+seed = "app.scripts.seed_users:main"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.15.0"
