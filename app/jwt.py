@@ -27,7 +27,7 @@ def create_access_token(user_id: int, remember_me: bool) -> str:
 
 def decode_access_token(token: str) -> dict:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
     except jwt.ExpiredSignatureError:
         raise AppError(
             status_code=401,

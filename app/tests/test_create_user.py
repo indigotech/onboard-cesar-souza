@@ -96,7 +96,7 @@ async def test_create_user_token_expired(client):
 
 @pytest.mark.asyncio
 async def test_create_user_invalid_token(client):
-    valid_time = datetime.now(UTC) + timedelta(minutes=10)
+    valid_time = datetime.now(UTC) + timedelta(minutes=15)
     invalid_token = jwt.encode({"sub": "123", "exp": valid_time}, "wrong-secret", algorithm=ALGORITHM)
     headers = {"Authorization": f"Bearer {invalid_token}"}
     response = await client.post("/users", json=BASE_PAYLOAD, headers=headers)
@@ -109,7 +109,7 @@ async def test_create_user_invalid_token(client):
 
 @pytest.mark.asyncio
 async def test_create_user_missing_sub(client):
-    valid_time = datetime.now(UTC) + timedelta(minutes=10)
+    valid_time = datetime.now(UTC) + timedelta(minutes=15)
     token = jwt.encode({"exp": valid_time}, SECRET_KEY, algorithm=ALGORITHM)
     headers = {"Authorization": f"Bearer {token}"}
     response = await client.post("/users", json=BASE_PAYLOAD, headers=headers)
