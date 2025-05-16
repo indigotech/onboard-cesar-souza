@@ -21,6 +21,7 @@ class User(BaseModel):
 class AuthRequest(BaseModel):
     email: str
     password: str
+    rememberMe: bool = False
 
 class AuthResponse(BaseModel):
     user: User

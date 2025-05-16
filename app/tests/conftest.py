@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import pytest_asyncio
+import bcrypt
 
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
@@ -8,6 +9,8 @@ from sqlalchemy.pool import NullPool
 
 from app.main import app
 from app.database import get_db, Base
+from app.models import User
+from datetime import date
 
 load_dotenv("test.env", override=True)
 
@@ -44,3 +47,17 @@ async def client():
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
         app.dependency_overrides.pop(get_db, None)
+
+@pytest_asyncio.fixture
+async def test_user():
+    async with SessionTest() as session:
+        user = User(
+            name="tester",
+            email="tester@test.com",
+            password=bcrypt.hashpw("abcd1234".encode(), bcrypt.gensalt()).decode('utf-8'),
+            birthDate=date(1999, 5, 9)
+        )
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+        return user

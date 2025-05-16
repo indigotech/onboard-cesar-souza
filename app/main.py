@@ -50,7 +50,7 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
 
 @app.post("/auth", response_model=schemas.AuthResponse, status_code=status.HTTP_200_OK)
 async def authenticate(auth: schemas.AuthRequest, db: AsyncSession = Depends(get_db)):
-    result = await crud.auth_user(db=db, auth=auth)
+    result, token = await crud.authenticate(db=db, auth=auth)
     if isinstance(result, str):
         raise AppError(
             status_code=400,
@@ -60,5 +60,5 @@ async def authenticate(auth: schemas.AuthRequest, db: AsyncSession = Depends(get
         )
     return schemas.AuthResponse(
         user=schemas.User.model_validate(result),
-        token="the_token"
+        token=token
     )
