@@ -7,8 +7,8 @@ load_dotenv()
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = os.environ["ALGORITHM"]
-DEFAULT_EXP_MINUTES = 15
-REMEMBER_ME_EXP_DAYS = 7
+DEFAULT_EXP_MINUTES = float(os.environ["DEFAULT_EXP"])
+REMEMBER_ME_EXP_DAYS = float(os.environ["REMEMBER_ME_EXP"])
 
 def create_access_token(user_id: int, remember_me: bool) -> str:
     expire = datetime.now(UTC) + (

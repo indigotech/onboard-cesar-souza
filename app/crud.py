@@ -47,7 +47,7 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     await db.refresh(db_user)
     return db_user
 
-async def authenticate(db: AsyncSession, auth: schemas.AuthRequest):
+async def authenticate(db: AsyncSession, auth: schemas.AuthRequest) -> tuple[models.User, str]:
     result = await db.execute(select(models.User).where(models.User.email == auth.email))
     user = result.scalar_one_or_none()
     if not user:

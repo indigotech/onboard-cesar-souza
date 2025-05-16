@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 from datetime import date
-from typing import Optional
 
 class UserBase(BaseModel):
     name: str
@@ -22,7 +21,7 @@ class User(BaseModel):
 class AuthRequest(BaseModel):
     email: str
     password: str
-    rememberMe: Optional[bool] = Field(default=False)
+    rememberMe: bool = False
 
 class AuthResponse(BaseModel):
     user: User
