@@ -68,3 +68,8 @@ async def authenticate(auth: schemas.AuthRequest, db: AsyncSession = Depends(get
 async def get_user(id: int = Path(title="User ID", gt=0), db:AsyncSession = Depends(get_db), _token_data: dict = Depends(verify_token)):
     result = await crud.get_user(db=db, id=id)
     return result
+
+@app.get("/users",response_model=list[schemas.User], status_code=status.HTTP_200_OK)
+async def list_users(max_number: int | None = Query(None, title="User listing limit", gt=0), db:AsyncSession = Depends(get_db), _token_data: dict = Depends(verify_token)):
+    result = await crud.list_users(db=db, max_number=max_number)
+    return result

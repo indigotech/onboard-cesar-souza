@@ -83,3 +83,16 @@ async def get_user(db: AsyncSession, id: int):
             details="User not found"
         )
     return user
+
+async def list_users(db: AsyncSession, max_number: int | None = None) -> list[models.User]:
+    limit = max_number or 10
+    result = await db.execute(select(models.User).order_by(models.User.name).limit(limit))
+    users = list(result.scalars().all())
+    if not users:
+        raise AppError(
+            status_code=404,
+            code="AUTH_01",
+            message="Nenhum usuário encontrado.",
+            details="User not found"
+        )
+    return users
