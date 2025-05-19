@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import func
 from . import models, schemas
 from .exceptions import AppError
 import re
@@ -84,15 +85,15 @@ async def get_user(db: AsyncSession, id: int):
         )
     return user
 
-async def list_users(db: AsyncSession, max_number: int | None = None) -> list[models.User]:
-    limit = max_number or 10
-    result = await db.execute(select(models.User).order_by(models.User.name).limit(limit))
+async def list_users(db: AsyncSession, skip: int, limit: int) -> tuple[list[models.User], int]:
+    user_count  = await db.execute(select(func.count()).select_from(models.User))
+    total: int = user_count.scalar_one()
+
+    result = await db.execute(
+        select(models.User)
+        .order_by(func.lower(models.User.name))
+        .offset(skip)
+        .limit(limit)
+    )
     users = list(result.scalars().all())
-    if not users:
-        raise AppError(
-            status_code=404,
-            code="AUTH_01",
-            message="Nenhum usuário encontrado.",
-            details="User not found"
-        )
-    return users
+    return users, total
