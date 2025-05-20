@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 from . import models, schemas
 from .exceptions import AppError
 import re
@@ -45,11 +46,11 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     )
     db.add(db_user)
     await db.commit()
-    await db.refresh(db_user)
+    await db.refresh(db_user, attribute_names=["addresses"])
     return db_user
 
 async def authenticate(db: AsyncSession, auth: schemas.AuthRequest) -> tuple[models.User, str]:
-    result = await db.execute(select(models.User).where(models.User.email == auth.email))
+    result = await db.execute(select(models.User).options(selectinload(models.User.addresses)).where(models.User.email == auth.email))
     user = result.scalar_one_or_none()
     if not user:
         raise AppError(
@@ -74,7 +75,7 @@ async def authenticate(db: AsyncSession, auth: schemas.AuthRequest) -> tuple[mod
     return user, token
 
 async def get_user(db: AsyncSession, id: int):
-    result = await db.execute(select(models.User).where(models.User.id == id))
+    result = await db.execute(select(models.User).options(selectinload(models.User.addresses)).where(models.User.id == id))
     user = result.scalar_one_or_none()
     if not user:
         raise AppError(
@@ -91,6 +92,7 @@ async def list_users(db: AsyncSession, skip: int, limit: int) -> tuple[list[mode
 
     result = await db.execute(
         select(models.User)
+        .options(selectinload(models.User.addresses))
         .order_by(func.lower(models.User.name))
         .offset(skip)
         .limit(limit)
