@@ -65,7 +65,6 @@ async def test_list_users_with_skip(client, create_users, auth_header):
     created_users = await create_users(10)
     response = await client.get("/users?skip=5", headers=auth_header)
     assert response.status_code == 200
-    
     expected_users = user_response(created_users[5:])
     assert response.json() == {
         "users": expected_users,
@@ -79,7 +78,6 @@ async def test_list_users_limit_less_than_total(client, create_users, auth_heade
     created_users = await create_users(10)
     response = await client.get("/users?limit=3", headers=auth_header)
     assert response.status_code == 200
-    
     expected_users = user_response(created_users[:3])
     assert response.json() == {
         "users": expected_users,
