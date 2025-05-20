@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Depends, Request, status
+from fastapi import FastAPI, Query, Path, Depends, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from . import models
@@ -63,3 +63,8 @@ async def authenticate(auth: schemas.AuthRequest, db: AsyncSession = Depends(get
         user=schemas.User.model_validate(result),
         token=token
     )
+
+@app.get("/user/{id}",response_model=schemas.User, status_code=status.HTTP_200_OK)
+async def get_user(id: int = Path(title="User ID", gt=0), db:AsyncSession = Depends(get_db), _token_data: dict = Depends(verify_token)):
+    result = await crud.get_user(db=db, id=id)
+    return result

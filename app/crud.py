@@ -71,3 +71,15 @@ async def authenticate(db: AsyncSession, auth: schemas.AuthRequest) -> tuple[mod
         remember_me=bool(auth.rememberMe)
     )
     return user, token
+
+async def get_user(db: AsyncSession, id: int):
+    result = await db.execute(select(models.User).where(models.User.id == id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise AppError(
+            status_code=404,
+            code="AUTH_01",
+            message="Usuário não encontrado.",
+            details="User not found"
+        )
+    return user
