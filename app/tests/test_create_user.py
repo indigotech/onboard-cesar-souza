@@ -21,6 +21,7 @@ def user_response(user_id: int):
         "name": BASE_PAYLOAD["name"],
         "email": BASE_PAYLOAD["email"],
         "birthDate": BASE_PAYLOAD["birthDate"],
+        "addresses": []
     }
 
 @pytest.mark.asyncio

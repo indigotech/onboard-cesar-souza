@@ -29,7 +29,8 @@ def user_response(users):
                 "id": user.id,
                 "name": user.name,
                 "email": user.email,
-                "birthDate": user.birthDate.isoformat()
+                "birthDate": user.birthDate.isoformat(),
+                "addresses": []
             }
             for user in users
         ],

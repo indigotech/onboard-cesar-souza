@@ -34,7 +34,8 @@ def user_response(user_id: int, token: str):
             "id": user_id,
             "name": "tester",
             "email": AUTH_PAYLOAD["email"],
-            "birthDate": str(date(1999, 5, 9))
+            "birthDate": str(date(1999, 5, 9)),
+            "addresses": []
         },
         "token": token
     }
