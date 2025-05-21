@@ -85,3 +85,16 @@ async def test_list_users_limit_less_than_total(client, create_users, auth_heade
         "has_prev": False,
         "has_next": True
     }
+
+@pytest.mark.asyncio
+async def test_list_users_skip_all_users(client, create_users, auth_header):
+    created_users = await create_users(10)
+    response = await client.get("/users?skip=10", headers=auth_header)
+    assert response.status_code == 200
+    expected_users = user_response(created_users[10:])
+    assert response.json() == {
+        "users": expected_users,
+        "total": 10,
+        "has_prev": True,
+        "has_next": False
+    }
