@@ -26,3 +26,9 @@ class AuthRequest(BaseModel):
 class AuthResponse(BaseModel):
     user: User
     token: str
+
+class PaginatedUsers(BaseModel):
+    users: list[User]
+    total: int
+    has_prev: bool
+    has_next: bool
